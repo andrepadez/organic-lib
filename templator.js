@@ -37,5 +37,13 @@ var Templator = module.exports = {
             html = html.replace(regExp, data[key]);
         });
         return html;
+    }, 
+    inject: function(wrapper, html){
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        children = Array.prototype.slice.call(div.children);
+        children.forEach(function(child){
+            wrapper.appendChild(child);
+        });
     }
 };
