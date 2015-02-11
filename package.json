@@ -1,0 +1,26 @@
+{
+  "name": "oet-lib",
+  "version": "0.0.1",
+  "description": "frontend lib with basic tools for the online editor team",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:albumprinter/oet-lib.git"
+  },
+  "keywords": [
+    "ajax",
+    "templator"
+  ],
+  "author": "andre.padez@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albumprinter/oet-lib/issues"
+  },
+  "homepage": "https://github.com/albumprinter/oet-lib",
+  "dependencies": {
+    "q": "^1.1.2"
+  }
+}
