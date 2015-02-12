@@ -11,7 +11,7 @@ module.exports = function(container, selector, cb){
 }
 
 var handleMouseDown = function(ev){
-    if(targets.indexOf(ev.target) > 0){
+    if(targets.indexOf(ev.target) > 0 && ev.ctrlKey === false){
         ev.preventDefault();
         draggingElement = ev.target;
         width = draggingElement.offsetWidth;
@@ -24,6 +24,7 @@ var handleMouseMove = function(ev){
         if(!draggingClone){
             draggingClone = draggingElement.cloneNode();
             draggingClone.style.position = 'absolute';
+            draggingClone.style.zIndex = 99999999;
             draggingClone.style.width = width + 'px';
             draggingClone.style.height = height + 'px';
             document.body.insertBefore(draggingClone, document.body.firstChild);
