@@ -1,5 +1,5 @@
 var Q = require('q');
-var ajax = require('./ajax');
+var ajax = require('../ajax');
 
 var cache = { regExp: {}, templates: {} };
 
