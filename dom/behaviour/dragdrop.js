@@ -35,10 +35,12 @@ var handleMouseMove = function(ev){
 };
 
 var handleMouseUp = function(ev){
-    document.body.removeChild(draggingClone);
-    releaseCallback(draggingElement, this, ev);
-    draggingElement = null;
-    draggingClone = null;
+    if(draggingElement){
+        document.body.removeChild(draggingClone);
+        releaseCallback(draggingElement, this, ev);
+        draggingElement = null;
+        draggingClone = null;
+    }
 };
 
 //[TODO] - allow for children of target to be drag handlers
