@@ -25,11 +25,6 @@ var Templator = module.exports = {
             return res.join('');
         });
     },
-    renderHTML: function(html, data){
-        var deferred = Q.defer();
-
-        return deferred.promise();
-    },
     supplant: function(html, data){
         Object.keys(data).forEach(function(key){
             var regExp = cache[key] || new RegExp('\{\{' + key + '\}\}', 'g');
