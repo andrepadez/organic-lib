@@ -4,16 +4,36 @@ var ajax = require('../ajax');
 var cache = { regExp: {}, templates: {} };
 
 var Templator = module.exports = {
+    init: function(views){
+        this.views = views;
+    },
     render: function(url, data){
         data = data || {};
         var deferred = Q.defer();
-        ajax.get(url).then(function(res){
-            cache.templates[url] = res;
-            var supplanted = Templator.supplant(res, data);
-            deferred.resolve(supplanted);
-        }, function(err){
-            deferred.reject(err);
-        });
+        if(this.views){
+            path = url.split('/');
+            var template = this.views;
+            Object.keys(path).forEach(function(key){
+                if(key !== "0" || path[key] !== 'views'){
+                    template = template[ path[key] ];
+                    if(!template){
+                        deferred.reject(Error('view not found in views.json ' + url));
+                    }
+                }
+            });
+            var html =  Templator.supplant(template, data);
+            deferred.resolve(html);
+        } else {
+            ajax.get(url)
+                .then(function(res){
+                    cache.templates[url] = res;
+                    var supplanted = Templator.supplant(res, data);
+                    deferred.resolve(supplanted);
+                }, function(err){
+                    deferred.reject(err);
+                });
+        }
+
         return deferred.promise;
     },
     renderQueue: function(url, queue){
