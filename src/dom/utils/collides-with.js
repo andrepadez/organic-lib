@@ -1,3 +1,4 @@
+//detects if an object(DOM element) is dropped on a target
 module.exports = function(target, coords){
     var startX = target.offsetLeft;
     var startY = target.offsetTop;

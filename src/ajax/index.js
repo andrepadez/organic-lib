@@ -1,3 +1,4 @@
+// promised library for Ajax requests
 var Q = require('q');
 
 var Ajax = module.exports = {

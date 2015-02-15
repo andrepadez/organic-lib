@@ -1,3 +1,4 @@
+//pubsub module used by our application controllers
 var registeredHandlers = {};
 
 module.exports = {

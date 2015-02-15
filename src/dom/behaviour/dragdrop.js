@@ -1,3 +1,4 @@
+//add drag and drop behaviour to elements in a container
 var targets, releaseCallback;
 var draggingElement, draggingClone, width, height;
 
