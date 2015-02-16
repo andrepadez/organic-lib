@@ -1,6 +1,5 @@
 
 module.exports = function(elem, parent){
-
     if(elem === parent){
         return true;
     }
@@ -9,5 +8,4 @@ module.exports = function(elem, parent){
             return true;
        }
     }
-
 }

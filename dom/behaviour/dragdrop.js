@@ -10,12 +10,10 @@ module.exports = function(container, elements, cb, clone){
     useClone = clone;
 
     container.addEventListener('mousedown', handleMouseDown);
-    document.body.addEventListener('mousemove', handleMouseMove);
-    document.body.addEventListener('mouseup', handleMouseUp);
-    document.body.addEventListener('mouseleave', handleMouseUp);
 }
 
 var handleMouseDown = function(ev){
+    document.body.addEventListener('mousemove', handleMouseMove);
     var target = shouldDrag(ev);
     if(target){
         ev.preventDefault();
@@ -25,7 +23,13 @@ var handleMouseDown = function(ev){
     }
 };
 
+var eventsAdded = false;
 var handleMouseMove = function(ev){
+    if(!eventsAdded){
+        document.body.addEventListener('mouseup', handleMouseUp);
+        document.body.addEventListener('mouseleave', handleMouseUp);
+        eventsAdded = true;
+    }
     if(draggingElement){
         if(!draggingClone){
             draggingClone = useClone? draggingElement.cloneNode(true) : draggingElement;
@@ -37,7 +41,7 @@ var handleMouseMove = function(ev){
         }
         draggingClone.style.marginLeft = (ev.x - width/2) + 'px';
         draggingClone.style.marginTop = (ev.y - height/2) + 'px';
-    };
+    }
 };
 
 var handleMouseUp = function(ev){
@@ -45,10 +49,14 @@ var handleMouseUp = function(ev){
         if(useClone){
             document.body.removeChild(draggingClone);
         }
-        typeof releaseCallback === 'function' && releaseCallback(draggingElement, this, ev);
     }
+    typeof releaseCallback === 'function' && releaseCallback(draggingElement, this, ev);
     draggingElement = null;
     draggingClone = null;
+    eventsAdded = false;
+    document.body.removeEventListener('mousemove', handleMouseMove);
+    document.body.removeEventListener('mouseup', handleMouseUp);
+    document.body.removeEventListener('mouseleave', handleMouseUp);
 };
 
 var shouldDrag = function(ev){
