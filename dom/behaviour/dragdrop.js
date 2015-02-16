@@ -4,10 +4,10 @@ var isChildOf = require('../utils/is-child-of');
 var targets, releaseCallback, useClone;
 var draggingElement, draggingClone, width, height;
 
-module.exports = function(container, selector, cb, clone){
+module.exports = function(container, elements, cb, clone){
+    targets = Array.prototype.slice.call( elements );
     releaseCallback = cb;
     useClone = clone;
-    targets = Array.prototype.slice.call( container.querySelectorAll(selector) );
 
     container.addEventListener('mousedown', handleMouseDown);
     document.body.addEventListener('mousemove', handleMouseMove);
@@ -45,7 +45,7 @@ var handleMouseUp = function(ev){
         if(useClone){
             document.body.removeChild(draggingClone);
         }
-        releaseCallback(draggingElement, this, ev);
+        typeof releaseCallback === 'function' && releaseCallback(draggingElement, this, ev);
     }
     draggingElement = null;
     draggingClone = null;
