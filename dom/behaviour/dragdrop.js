@@ -2,7 +2,7 @@
 var isChildOf = require('../utils/is-child-of');
 
 var container, targets, elements, releaseCallback, useClone;
-var isMouseDown, draggableObject, positionX, positionY, startX, startY;
+var isMouseDown, draggableObject, position, startX, startY;
 
 var maxZ = 1000;
 
@@ -17,37 +17,42 @@ module.exports = function(options){
     container.addEventListener('mousedown', handleMouseDown);
 }
 
-document.body.addEventListener('mousemove', handleMouseMove);
-document.body.addEventListener('mouseleave', handleMouseUp);
 document.body.addEventListener('mouseup', handleMouseUp);
+document.body.addEventListener('mouseleave', handleMouseUp);
+document.body.addEventListener('mousemove', handleMouseMove);
 
-var handleMouseDown = function(ev){
+function handleMouseDown(ev){
     isMouseDown = true;
     draggableObject = getDraggableObject(ev);
-    draggableObject = useClone? draggableObject.clone(true) : draggableObject;
+    width = draggableObject.offsetWidth;
+    height = draggableObject.offsetHeight;
+    position = getOffset(draggableObject);
+    draggableObject = useClone? draggableObject.cloneNode(true) : draggableObject;
     if(draggableObject){
-        positionX = draggableObject.offsetLeft;
-        positionY = draggableObject.offsetTop;
+        draggableObject.style.position = 'absolute';
+        draggableObject.style.width = width + 'px';
+        draggableObject.style.height = height + 'px';
         startX = ev.x;
         startY = ev.y;
-        width = draggableObject.offsetWidth;
-        height = draggableObject.offsetHeight;
+        
     }
 };
 
 function handleMouseMove(ev){
     if(draggableObject && isMouseDown){
         ev.preventDefault();
-        draggableObject.style.position = 'absolute';
+        
         draggableObject.style.zIndex = maxZ++;
         draggableObject.style.width = width + 'px';
         draggableObject.style.height = height + 'px';
-        document.body.insertBefore(draggableObject, document.body.firstChild);
+        if( useClone && !draggableObject.parentNode ){
+            document.body.appendChild(draggableObject);
+        }
         
         var deltaX = ev.x - startX;
         var deltaY = ev.y - startY;
-        draggableObject.style.marginLeft = (positionX + deltaX) + 'px';
-        draggableObject.style.marginTop = (positionY + deltaY) + 'px';
+        draggableObject.style.marginLeft = (position.left + deltaX) + 'px';
+        draggableObject.style.marginTop = (position.top + deltaY) + 'px';
     }
 };
 
@@ -57,10 +62,11 @@ function handleMouseUp(ev){
         return;
     }
     if(useClone){
-        document.body.removeChild(draggingClone);
+        draggableObject.parentNode.removeChild(draggableObject);
     }
     typeof releaseCallback === 'function' && releaseCallback(draggableObject, this, ev);
     draggableObject = null;
+    isMouseDown = false;
 };
 
 function getDraggableObject(ev){
@@ -76,3 +82,16 @@ function getDraggableObject(ev){
     });
     return dragObject;
 };
+
+function getOffset(elem){
+    var offsetLeft = 0;
+    var offsetTop = 0;
+    do {
+        if( !isNaN(elem.offsetLeft) && !isNaN(elem.offsetTop) ){
+            offsetLeft += elem.offsetLeft;
+            offsetTop += elem.offsetTop;
+        }
+    } while ( elem = elem.offsetParent );
+
+    return { left: offsetLeft, top: offsetTop };
+}
