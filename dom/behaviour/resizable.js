@@ -33,7 +33,6 @@ var handlerMouseDown = function(ev){
 var handlerMouseMove = function(ev){
     ev.stopPropagation();
     document.body.addEventListener('mouseup', handlerMouseUp);
-    document.body.addEventListener('mouseleave', handlerMouseUp);
     var deltaX = ev.x - startX;
     var deltaY = ev.y - startY;
     element.style.width = (startWidth + deltaX) + 'px';
@@ -43,6 +42,5 @@ var handlerMouseMove = function(ev){
 var handlerMouseUp = function(ev){
     ev.stopPropagation();
     document.body.removeEventListener('mousemove', handlerMouseMove);
-    document.body.removeEventListener('mouseup', handlerMouseUp);
-    document.body.removeEventListener('mouseleave', handlerMouseUp);
+    document.body.removeEventListener('mouseup', handlerMouseUp);    
 };

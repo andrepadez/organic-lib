@@ -1,28 +1,29 @@
 var DragDrop = require('./dragdrop');
 
-var container, element, droppedCallback;
+var container, element, releaseCallback;
 
-module.exports = function(cont, elem, cb){
-    container = cont;
-    element = elem;
-    droppedCallback = cb || function(){};
-    DragDrop(cont, element, droppedHandler);
-}
+module.exports = function(options){
+    releaseCallback = options.releaseCallback || function(){};
+    options.releaseCallback = droppedHandler;
+    DragDrop(options);
+};
 
-var droppedHandler = function(dragged, container, ev){
+function droppedHandler (dragged, container, ev){
     var width = dragged.offsetWidth;
     var height = dragged.offsetHeight;
-    if(ev.x - (width/2) < container.offsetLeft){
-        dragged.style.marginLeft = container.offsetLeft + 'px';
+    
+    if(dragged.offsetLeft < 0){
+        dragged.style.marginLeft = '0';
     }
-    if( ev.x + (width/2) > ( container.offsetLeft + container.offsetWidth) ){
-        dragged.style.marginLeft = ( container.offsetLeft + container.offsetWidth - (width) ) + 'px';
+    if(dragged.offsetLeft + dragged.offsetWidth > container.offsetWidth){
+        dragged.style.marginLeft = container.offsetWidth - dragged.offsetWidth + 'px';
     }
-    if( ev.y - (height/2) < container.offsetTop){
-        dragged.style.marginTop = container.offsetTop + 'px';
+    if(dragged.offsetTop < 0){
+        dragged.style.marginTop = '0';
     }
-    if( ev.y + (height) > container.offsetHeight){
-        dragged.style.marginTop = ( container.offsetHeight - (height) ) + 'px';
+    if(dragged.offsetTop + dragged.offsetHeight > container.offsetHeight){
+        dragged.style.marginTop = container.offsetHeight - dragged.offsetHeight + 'px';
     }
-    droppedCallback(dragged, container, ev);
+
+    releaseCallback(dragged, container, ev);
 };

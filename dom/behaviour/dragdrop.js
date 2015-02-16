@@ -1,75 +1,78 @@
+//add drag and drop behaviour to elements in a container
 var isChildOf = require('../utils/is-child-of');
 
-//add drag and drop behaviour to elements in a container
-var targets, releaseCallback, useClone;
-var draggingElement, draggingClone, width, height;
+var container, targets, elements, releaseCallback, useClone;
+var isMouseDown, draggableObject, positionX, positionY, startX, startY;
 
-module.exports = function(container, elements, cb, clone){
+var maxZ = 1000;
+
+module.exports = function(options){
+    container = options.container || document.body;
+    elements = options.elements || [ options.element ];
+    releaseCallback = options.releaseCallback || function(){};
+    useClone = typeof options.useClone === 'boolean'? options.useClone : false;
+
     targets = Array.prototype.slice.call( elements );
-    releaseCallback = cb;
-    useClone = clone;
 
     container.addEventListener('mousedown', handleMouseDown);
 }
 
+document.body.addEventListener('mousemove', handleMouseMove);
+document.body.addEventListener('mouseleave', handleMouseUp);
+document.body.addEventListener('mouseup', handleMouseUp);
+
 var handleMouseDown = function(ev){
-    document.body.addEventListener('mousemove', handleMouseMove);
-    var target = shouldDrag(ev);
-    if(target){
+    isMouseDown = true;
+    draggableObject = getDraggableObject(ev);
+    draggableObject = useClone? draggableObject.clone(true) : draggableObject;
+    if(draggableObject){
+        positionX = draggableObject.offsetLeft;
+        positionY = draggableObject.offsetTop;
+        startX = ev.x;
+        startY = ev.y;
+        width = draggableObject.offsetWidth;
+        height = draggableObject.offsetHeight;
+    }
+};
+
+function handleMouseMove(ev){
+    if(draggableObject && isMouseDown){
         ev.preventDefault();
-        draggingElement = target;
-        width = draggingElement.offsetWidth;
-        height = draggingElement.offsetHeight;
+        draggableObject.style.position = 'absolute';
+        draggableObject.style.zIndex = maxZ++;
+        draggableObject.style.width = width + 'px';
+        draggableObject.style.height = height + 'px';
+        document.body.insertBefore(draggableObject, document.body.firstChild);
+        
+        var deltaX = ev.x - startX;
+        var deltaY = ev.y - startY;
+        draggableObject.style.marginLeft = (positionX + deltaX) + 'px';
+        draggableObject.style.marginTop = (positionY + deltaY) + 'px';
     }
 };
 
-var eventsAdded = false;
-var handleMouseMove = function(ev){
-    if(!eventsAdded){
-        document.body.addEventListener('mouseup', handleMouseUp);
-        document.body.addEventListener('mouseleave', handleMouseUp);
-        eventsAdded = true;
+function handleMouseUp(ev){
+    ev.preventDefault();
+    if(!draggableObject){
+        return;
     }
-    if(draggingElement){
-        if(!draggingClone){
-            draggingClone = useClone? draggingElement.cloneNode(true) : draggingElement;
-            draggingClone.style.position = 'absolute';
-            draggingClone.style.zIndex = 99999999;
-            draggingClone.style.width = width + 'px';
-            draggingClone.style.height = height + 'px';
-            document.body.insertBefore(draggingClone, document.body.firstChild);
-        }
-        draggingClone.style.marginLeft = (ev.x - width/2) + 'px';
-        draggingClone.style.marginTop = (ev.y - height/2) + 'px';
+    if(useClone){
+        document.body.removeChild(draggingClone);
     }
+    typeof releaseCallback === 'function' && releaseCallback(draggableObject, this, ev);
+    draggableObject = null;
 };
 
-var handleMouseUp = function(ev){
-    if(draggingClone){
-        if(useClone){
-            document.body.removeChild(draggingClone);
-        }
-    }
-    typeof releaseCallback === 'function' && releaseCallback(draggingElement, this, ev);
-    draggingElement = null;
-    draggingClone = null;
-    eventsAdded = false;
-    document.body.removeEventListener('mousemove', handleMouseMove);
-    document.body.removeEventListener('mouseup', handleMouseUp);
-    document.body.removeEventListener('mouseleave', handleMouseUp);
-};
-
-var shouldDrag = function(ev){
+function getDraggableObject(ev){
     if(ev.ctrlKey){
         return false;
     }
     var dragObject = null;
     targets.forEach(function(target){
-        if( isChildOf(ev.target, target) ){
+        var nodeName = ev.target.nodeName.toLowerCase();
+        if( nodeName !== 'input' && nodeName !== 'button' && isChildOf(ev.target, target) ){
             dragObject = target;
         }
     });
     return dragObject;
 };
-
-
