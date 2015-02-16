@@ -12,6 +12,7 @@ module.exports = function(container, selector, cb, clone){
     container.addEventListener('mousedown', handleMouseDown);
     document.body.addEventListener('mousemove', handleMouseMove);
     document.body.addEventListener('mouseup', handleMouseUp);
+    document.body.addEventListener('mouseout', handleMouseUp);
 }
 
 var handleMouseDown = function(ev){
