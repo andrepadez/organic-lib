@@ -1,79 +1,85 @@
 //add drag and drop behaviour to elements in a container
-var isChildOf = require('../utils/is-child-of');
 
-var container, targets, elements, releaseCallback, useClone;
-var isMouseDown, draggableObject, position, startX, startY;
+var isChildOf = require('../utils/is-child-of');
+var getOffset = require('../utils/get-offset');
 
 var maxZ = 1000;
 
 module.exports = function(options){
-    container = options.container || document.body;
-    elements = options.elements || [ options.element ];
-    releaseCallback = options.releaseCallback || function(){};
-    useClone = typeof options.useClone === 'boolean'? options.useClone : false;
+    return new DragDrop(options);
+};
 
-    targets = Array.prototype.slice.call( elements );
+var DragDrop = function(options){
+    this.container = options.container || document.body;
+    var elements = options.elements || [ options.element ];
+    this.releaseCallback = options.releaseCallback || function(){};
+    this.useClone = typeof options.useClone === 'boolean'? options.useClone : false;
+    this.targets = Array.prototype.slice.call(elements);
 
-    container.addEventListener('mousedown', handleMouseDown);
-}
+    this.mouseMoveHandler = this.handleMouseMove.bind(this);
+    this.mouseUpHandler = this.handleMouseUp.bind(this);
+    this.container.addEventListener( 'mousedown', this.handleMouseDown.bind(this) );
+};
 
-document.body.addEventListener('mouseup', handleMouseUp);
-document.body.addEventListener('mouseleave', handleMouseUp);
-document.body.addEventListener('mousemove', handleMouseMove);
-
-function handleMouseDown(ev){
-    isMouseDown = true;
-    draggableObject = getDraggableObject(ev);
-    if(draggableObject){
-        width = draggableObject.offsetWidth;
-        height = draggableObject.offsetHeight;
-        position = getOffset(draggableObject);
-        draggableObject = useClone? draggableObject.cloneNode(true) : draggableObject;
-        draggableObject.style.position = 'absolute';
-        draggableObject.style.width = width + 'px';
-        draggableObject.style.height = height + 'px';
-        startX = ev.x;
-        startY = ev.y;
+DragDrop.prototype.handleMouseDown = function(ev){
+    this.isMouseDown = true;
+    this.draggableObject = this.getDraggableObject(ev);
+    if(this.draggableObject){
+        this.width = this.draggableObject.offsetWidth;
+        this.height = this.draggableObject.offsetHeight;
+        this.position = getOffset(this.draggableObject);
+        this.draggableObject = this.useClone? this.draggableObject.cloneNode(true) : this.draggableObject;
+        this.draggableObject.style.position = 'absolute';
+        this.draggableObject.style.width = this.width + 'px';
+        this.draggableObject.style.height = this.height + 'px';
+        this.startX = ev.x;
+        this.startY = ev.y;
+        document.body.addEventListener( 'mouseup', this.mouseUpHandler );
+        document.body.addEventListener( 'mouseleave', this.mouseUpHandler );
+        document.body.addEventListener( 'mousemove', this.mouseMoveHandler );
     }
 };
 
-function handleMouseMove(ev){
-    if(draggableObject && isMouseDown){
+DragDrop.prototype.handleMouseMove = function(ev){
+    if(this.draggableObject && this.isMouseDown){
         ev.preventDefault();
         
-        draggableObject.style.zIndex = maxZ++;
-        draggableObject.style.width = width + 'px';
-        draggableObject.style.height = height + 'px';
-        if( useClone && !draggableObject.parentNode ){
-            document.body.appendChild(draggableObject);
+        this.draggableObject.style.zIndex = maxZ++;
+        this.draggableObject.style.width = this.width + 'px';
+        this.draggableObject.style.height = this.height + 'px';
+        if( this.useClone && !this.draggableObject.parentNode ){
+            document.body.appendChild(this.draggableObject);
         }
         
-        var deltaX = ev.x - startX;
-        var deltaY = ev.y - startY;
-        draggableObject.style.marginLeft = (position.left + deltaX) + 'px';
-        draggableObject.style.marginTop = (position.top + deltaY) + 'px';
+        var deltaX = ev.x - this.startX;
+        var deltaY = ev.y - this.startY;
+        this.draggableObject.style.marginLeft = (this.position.left + deltaX) + 'px';
+        this.draggableObject.style.marginTop = (this.position.top + deltaY) + 'px';
     }
 };
 
-function handleMouseUp(ev){
+DragDrop.prototype.handleMouseUp = function(ev){
     ev.preventDefault();
-    if(!draggableObject){
+    if( !this.draggableObject ){
         return;
     }
-    if(useClone){
-        draggableObject.parentNode.removeChild(draggableObject);
+    if( this.draggableObject.parentNode && this.useClone ){
+        this.draggableObject.parentNode.removeChild( this.draggableObject );
     }
-    typeof releaseCallback === 'function' && releaseCallback(draggableObject, this, ev);
-    draggableObject = null;
-    isMouseDown = false;
+    this.releaseCallback(this.draggableObject, ev);
+    this.draggableObject = null;
+    this.isMouseDown = false;
+    document.body.removeEventListener( 'mouseup', this.mouseUpHandler );
+    document.body.removeEventListener( 'mouseleave', this.mouseUpHandler );
+    document.body.removeEventListener( 'mousemove', this.mouseUpHandler );
 };
 
-function getDraggableObject(ev){
+DragDrop.prototype.getDraggableObject = function(ev){
     if(ev.ctrlKey){
         return false;
     }
     var dragObject = null;
-    targets.forEach(function(target){
+    this.targets.forEach(function(target){
         var nodeName = ev.target.nodeName.toLowerCase();
         if( nodeName !== 'input' && nodeName !== 'button' && isChildOf(ev.target, target) ){
             dragObject = target;
@@ -81,16 +87,3 @@ function getDraggableObject(ev){
     });
     return dragObject;
 };
-
-function getOffset(elem){
-    var offsetLeft = 0;
-    var offsetTop = 0;
-    do {
-        if( !isNaN(elem.offsetLeft) && !isNaN(elem.offsetTop) ){
-            offsetLeft += elem.offsetLeft;
-            offsetTop += elem.offsetTop;
-        }
-    } while ( elem = elem.offsetParent );
-
-    return { left: offsetLeft, top: offsetTop };
-}
