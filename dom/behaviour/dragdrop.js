@@ -24,17 +24,16 @@ document.body.addEventListener('mousemove', handleMouseMove);
 function handleMouseDown(ev){
     isMouseDown = true;
     draggableObject = getDraggableObject(ev);
-    width = draggableObject.offsetWidth;
-    height = draggableObject.offsetHeight;
-    position = getOffset(draggableObject);
-    draggableObject = useClone? draggableObject.cloneNode(true) : draggableObject;
     if(draggableObject){
+        width = draggableObject.offsetWidth;
+        height = draggableObject.offsetHeight;
+        position = getOffset(draggableObject);
+        draggableObject = useClone? draggableObject.cloneNode(true) : draggableObject;
         draggableObject.style.position = 'absolute';
         draggableObject.style.width = width + 'px';
         draggableObject.style.height = height + 'px';
         startX = ev.x;
         startY = ev.y;
-        
     }
 };
 
