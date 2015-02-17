@@ -3,7 +3,6 @@ var startWidth, startHeight, startX, startY;
 
 module.exports = function(elem){
     element = elem;
-    element.style.position = 'relative';
     addHandler();
     handler.addEventListener('mousedown', handlerMouseDown);
 }
