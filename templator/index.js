@@ -55,11 +55,16 @@ var Templator = module.exports = {
         return html;
     }, 
     inject: function(wrapper, html){
+        var deferred = Q.defer();
         var div = document.createElement('div');
         div.innerHTML = html;
         children = Array.prototype.slice.call(div.children);
-        children.forEach(function(child){
-            wrapper.appendChild(child);
+        requestAnimationFrame(function(){
+            children.forEach(function(child){
+                wrapper.appendChild(child);
+            });
+            deferred.resolve();
         });
+        return deferred.promise;
     }
 };
