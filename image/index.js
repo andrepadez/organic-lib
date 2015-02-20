@@ -2,7 +2,7 @@ var Q = require('q');
 
 var Image = function(file){
     this.file = file;
-    this.image = window.Image();
+    this.image = new window.Image();
     Object.keys(this.file).forEach( function(key){
         this[key] = file[key];
     }.bind(this) );
