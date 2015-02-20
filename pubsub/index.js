@@ -24,6 +24,7 @@ function subscribe (messages, handler){
 };
 
 function broadcast(message, data){
+    data = data || {};
     var handlers = registeredHandlers[message] || [];
     handlers.forEach(function(handler){
         handler(message, data);
