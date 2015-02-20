@@ -14,7 +14,6 @@ Image.prototype.load = function(){
 
     reader.onload = function(ev){
         this.dataUrl = ev.target.result;
-        console.log('loaded', this.name);
         deferred.resolve(this);
     }.bind(this);
 
