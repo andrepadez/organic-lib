@@ -17,7 +17,10 @@ Image.prototype.load = function(){
 
     reader.onload = function(ev){
         this.dataUrl = ev.target.result;
-        deferred.resolve(this);
+        this.onload = function(){
+            deferred.resolve(this);
+        }.bind(this);
+        this.src = this.dataUrl;
     }.bind(this);
 
     reader.onerror = function(ev){
