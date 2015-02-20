@@ -1,3 +1,5 @@
+var Q = require('q');
+
 var Image = module.exports = function(file){
     this.file = file;
     Object.keys(this.file).forEach( function(key){
@@ -7,7 +9,7 @@ var Image = module.exports = function(file){
 
 Image.prototype.load = function(){
     var deferred = Q.defer();
-    
+
     var reader = new FileReader();
 
     reader.onload = function(ev){
