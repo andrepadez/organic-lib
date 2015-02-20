@@ -1,11 +1,14 @@
 var Q = require('q');
 
-var Image = module.exports = function(file){
+var Image = function(file){
     this.file = file;
     Object.keys(this.file).forEach( function(key){
         this[key] = file[key];
     }.bind(this) );
 };
+
+Image.prototype.constructor = Image;
+module.exports = Image;
 
 Image.prototype.load = function(){
     var deferred = Q.defer();
