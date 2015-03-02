@@ -47,8 +47,7 @@ OETImage.prototype.resizeToCanvas = function(options){
     var targetHeight = options.targetHeight;
     if( !(targetWidth || targetHeight) ){
         var err = Error('you have to specify a targetWidth and/or targetHeight');
-        console.error(err);
-        return deferred.reject( err );
+        deferred.reject( err );
     }
 
     var render = function(){
@@ -82,4 +81,3 @@ OETImage.prototype.resizeToCanvas = function(options){
 
     return deferred.promise;
 };
-
