@@ -19,5 +19,8 @@ var Ajax = module.exports = {
         };
         xhr.send();
         return deferred.promise;
+    },
+    getJSON: function(url){
+        return Ajax.get(url).then(JSON.parse);
     }
 };
