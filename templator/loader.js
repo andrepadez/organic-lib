@@ -3,7 +3,7 @@ var ajax = require('../ajax');
 
 var Loader = module.exports = {
     init: function(views){
-        this.views = views; console.log(views);
+        this.views = views;
     },
     load: function(url){
         var deferred = Q.defer();
