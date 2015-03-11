@@ -6,27 +6,28 @@ var Loader = module.exports = {
         this.views = views;
     },
     load: function(url){
-        var deferred = Q.defer();
         if( Loader.views ){
-            deferred.resolve( loadFromJSON(url) );
+            return loadFromJSON(url);
         } else {
             return ajax.get(url);
         }
 
-        return deferred.promise;
+        
     }
 };
 
 var loadFromJSON = function(url){
+    var deferred = Q.defer();
     path = url.split('/');
     var template = Loader.views;
     Object.keys(path).forEach(function(key){
         if(key !== "0" || path[key] !== 'views'){
             template = template[ path[key] ];
             if(!template){
-                throw Error('view not found in views.json ' + url);
+                deferred.reject( Error('view not found in views.json ' + url) );
             }
         }
     });
-    return template;
+    deferred.resolve( template );
+    return deferred.promise;
 }; 
