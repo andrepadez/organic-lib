@@ -22,5 +22,6 @@
   "homepage": "https://github.com/albumprinter/oet-lib",
   "dependencies": {
     "q": "^1.1.2"
-  }
+  },
+  "devDependencies": {}
 }

@@ -1,5 +1,6 @@
 //promised Templating engine 
 var Q = require('q');
+var swig = require('swig');
 var loader = require('./loader');
 var parser = require('./parser');
 
@@ -15,26 +16,11 @@ var Templator = module.exports = {
         
         return loader.load(url)
             .then( function(template){
-                return parser.parse(template, data);
+                console.log('data', data);
+                return swig.render(template, { locals: data });
             } );
     },
-    renderQueue: function(url, queue){
-        var promises = [];
-        queue.forEach(function(data){
-            promises.push(Templator.render(url, data));
-        });
-        return Q.all(promises).then(function(res){
-            return res.join('');
-        });
-    },
-    supplant: function(html, data){
-        Object.keys(data).forEach(function(key){
-            var regExp = cacheRegExp[key] || new RegExp('\{\{\ ?' + key + '\ ?\}\}', 'g');
-            cacheRegExp[key] = regExp;
-            html = html.replace(regExp, data[key]);
-        });
-        return html;
-    }, 
+    
     inject: function(wrapper, html){
         var deferred = Q.defer();
         var div = document.createElement('div');
