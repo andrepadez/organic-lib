@@ -1,6 +1,7 @@
 //promised Templating engine 
 var Q = require('q');
 var loader = require('./loader');
+var parser = require('./parser');
 
 //caching the regExp
 var cacheRegExp = {};
@@ -13,9 +14,9 @@ var Templator = module.exports = {
         data = data || {};
         
         return loader.load(url)
-            .then( function(html){
-                return Templator.supplant(html, data);
-            });
+            .then( function(template){
+                return parser.parse(template, data);
+            } );
     },
     renderQueue: function(url, queue){
         var promises = [];
@@ -28,7 +29,7 @@ var Templator = module.exports = {
     },
     supplant: function(html, data){
         Object.keys(data).forEach(function(key){
-            var regExp = cacheRegExp[key] || new RegExp('\{\{' + key + '\}\}', 'g');
+            var regExp = cacheRegExp[key] || new RegExp('\{\{\ ?' + key + '\ ?\}\}', 'g');
             cacheRegExp[key] = regExp;
             html = html.replace(regExp, data[key]);
         });
