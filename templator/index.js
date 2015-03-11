@@ -2,7 +2,6 @@
 var Q = require('q');
 var swig = require('swig');
 var loader = require('./loader');
-var parser = require('./parser');
 
 //caching the regExp
 var cacheRegExp = {};
