@@ -1,6 +1,6 @@
 {
   "name": "organic-lib",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "frontend lib that will grow organically with the landrebels project",
   "main": "src/",
   "scripts": {
