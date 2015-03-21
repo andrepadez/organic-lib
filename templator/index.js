@@ -19,6 +19,7 @@ var Templator = module.exports = {
     },
 
     getTemplate: function(url){
+        url = 'views/' + url;
         return loader.load(url);
     },
 
