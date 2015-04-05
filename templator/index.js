@@ -19,7 +19,6 @@ var Templator = module.exports = {
     },
 
     getTemplate: function(url){
-        url = 'views/' + url;
         return loader.load(url);
     },
 
@@ -33,10 +32,10 @@ var Templator = module.exports = {
     
     inject: function(wrapper, html){
         var deferred = Q.defer();
-        var div = document.createElement('div');
         (function(container, html){
-            container.innerHTML = html;
-            children = Array.prototype.slice.call(container.children);
+            var frag = document.createElement('div');
+            frag.innerHTML = html;
+            children = Array.prototype.slice.call(frag.children);
             requestAnimationFrame(function(){
                 children.forEach(function(child){
                     wrapper.appendChild(child);
