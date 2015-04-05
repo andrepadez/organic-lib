@@ -19,6 +19,9 @@ var Templator = module.exports = {
     },
 
     getTemplate: function(url){
+        if(url.indexOf('views/') === -1){
+            url = 'views/'+url;
+        }
         return loader.load(url);
     },
 
